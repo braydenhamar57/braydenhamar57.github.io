@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Video Queue Player</title>
+
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+#player{
+width:80%;
+height:450px;
+margin:auto;
+margin-top:20px;
+}
+
+iframe{
+width:100%;
+height:100%;
+border:none;
+}
+
+input{
+width:60%;
+padding:10px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
+}
+
+#queue{
+margin-top:20px;
+}
+
+.queueItem{
+padding:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Video Queue Player</h1>
+
+<input id="url" placeholder="Paste YouTube, Twitch, or Nebula URL">
+<button onclick="add()">Add to Queue</button>
+
+<div id="player"></div>
+
+<div>
+<button onclick="next()">Next</button>
+</div>
+
+<h2>Queue</h2>
+<div id="queue"></div>
+
+<script>
+
+let queue=[]
+let current=0
+
+function add(){
+
+let url=document.getElementById("url").value
+if(url=="")return
+
+queue.push(url)
+document.getElementById("url").value=""
+
+render()
+
+if(queue.length==1) play()
+
+}
+
+function render(){
+
+let q=document.getElementById("queue")
+q.innerHTML=""
+
+queue.forEach((v,i)=>{
+
+let d=document.createElement("div")
+d.className="queueItem"
+d.innerText=(i+1)+" - "+v
+
+q.appendChild(d)
+
+})
+
+}
+
+function play(){
+
+if(queue.length==0)return
+
+let url=queue[current]
+let player=document.getElementById("player")
+
+if(url.includes("youtube") || url.includes("youtu.be")){
+
+let id=url.split("v=")[1]
+
+if(!id){
+id=url.split("/").pop()
+}
+
+player.innerHTML=
+`<iframe src="https://www.youtube.com/embed/${id}?autoplay=1"></iframe>`
+
+}
+
+else if(url.includes("twitch")){
+
+let channel=url.split("twitch.tv/")[1]
+
+player.innerHTML=
+`<iframe src="https://player.twitch.tv/?channel=${channel}&parent=localhost&autoplay=true"></iframe>`
+
+}
+
+else if(url.includes("nebula")){
+
+player.innerHTML=
+`<iframe src="${url}"></iframe>`
+
+}
+
+else{
+
+player.innerHTML=
+`<iframe src="${url}"></iframe>`
+
+}
+
+}
+
+function next(){
+
+if(queue.length==0)return
+
+current++
+
+if(current>=queue.length)
+current=0
+
+play()
+
+}
+
+</script>
+
+</body>
+</html>
